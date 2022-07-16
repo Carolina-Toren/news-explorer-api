@@ -48,9 +48,10 @@ const createArticle = (req, res, next) => {
 
 const deleteArticle = (req, res, next) => {
   const { articlesId } = req.params;
-  Article.findById({ _id: articlesId })
+  Article.findById({ _id: articlesId }).select('+owner')
     .then((article) => {
-      if (article.owner._id !== req.user._id) {
+      /* eslint eqeqeq: 0 */
+      if (article.owner._id != req.user._id) {
         throw new ForbiddentError('Access to the requested resource is forbidden');
       }
       Article.deleteOne({ _id: articlesId }).then(() => {
