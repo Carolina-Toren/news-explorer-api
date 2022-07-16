@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const NotFoundError = require('../errors/NotFoundError');
+const UserExistsError = require('../errors/UserExistsError')
 
 const getUserById = (req, res, next) => {
   const { _id } = req.user;
@@ -22,7 +23,7 @@ const createUser = (req, res, next) => {
   User.findOne({ email })
     .then((emailExists) => {
       if (emailExists) {
-        throw new Error('User is already exists');
+        throw new UserExistsError('User already exists');
       } else {
         bcrypt.hash(password, 10)
           .then((hash) => User.create({ name, email, password: hash }))
