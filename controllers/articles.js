@@ -2,13 +2,19 @@ const Article = require('../models/article');
 const BadRequestError = require('../errors/badRequestError');
 const ForbiddentError = require('../errors/ForbiddentError');
 const NotFoundError = require('../errors/NotFoundError');
+const {
+  FORBIDDEN_MESSAGE,
+  BAD_REQUEST_MESSAGE,
+  ARTICLE_NOT_FOUND_MESSAGE,
+  NO_ARTICLES_ERROR_MESSAGE,
+} = require('../utils/constants');
 
 const getAllArticles = (req, res, next) => {
   const { _id } = req.user;
   Article.find({ }).select('+owner')
     .then((articlesData) => {
       if (articlesData.length === 0) {
-        throw new NotFoundError('No articles to display');
+        throw new NotFoundError(NO_ARTICLES_ERROR_MESSAGE);
       } else {
         const userArticles = articlesData.filter((article) => article.owner.toHexString() === _id);
         res.status(200).send(userArticles);
@@ -39,7 +45,7 @@ const createArticle = (req, res, next) => {
 
     .then((newArticle) => {
       if (!newArticle) {
-        throw new BadRequestError('Bad request');
+        throw new BadRequestError(BAD_REQUEST_MESSAGE);
       }
       res.status(200).send(newArticle);
     })
@@ -50,16 +56,15 @@ const deleteArticle = (req, res, next) => {
   const { articlesId } = req.params;
   Article.findById({ _id: articlesId }).select('+owner')
     .then((article) => {
-      /* eslint eqeqeq: 0 */
-      if (article.owner._id != req.user._id) {
-        throw new ForbiddentError('Access to the requested resource is forbidden');
+      if (article.owner._id.toString() !== req.user._id) {
+        throw new ForbiddentError(FORBIDDEN_MESSAGE);
       }
       Article.deleteOne({ _id: articlesId }).then(() => {
         res.status(200).json('article has been deleted successfully');
       });
     })
     .catch(() => {
-      throw new NotFoundError('No article matching id found');
+      throw new NotFoundError(ARTICLE_NOT_FOUND_MESSAGE);
     })
     .catch(next);
 };

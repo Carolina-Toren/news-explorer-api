@@ -3,14 +3,21 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const NotFoundError = require('../errors/NotFoundError');
-const UserExistsError = require('../errors/UserExistsError')
+const UserExistsError = require('../errors/UserExistsError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
+const {
+  USER_NOT_FOUND_MESSAGE,
+  USER_EXISTS_ERROR_MESSAGE,
+  INCOREC_CREDENTIALS_MESSAGE,
+
+} = require('../utils/constants');
 
 const getUserById = (req, res, next) => {
   const { _id } = req.user;
   User.findById(_id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('No user with matching id found');
+        throw new NotFoundError(USER_NOT_FOUND_MESSAGE);
       }
       res.status(200).send({ email: user.email, name: user.name });
     })
@@ -23,7 +30,7 @@ const createUser = (req, res, next) => {
   User.findOne({ email })
     .then((emailExists) => {
       if (emailExists) {
-        throw new UserExistsError('User already exists');
+        throw new UserExistsError(USER_EXISTS_ERROR_MESSAGE);
       } else {
         bcrypt.hash(password, 10)
           .then((hash) => User.create({ name, email, password: hash }))
@@ -49,7 +56,7 @@ const login = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'Error') {
-        throw new NotFoundError('Incorrect email or password');
+        throw new UnauthorizedError(INCOREC_CREDENTIALS_MESSAGE);
       }
       next(err);
     })

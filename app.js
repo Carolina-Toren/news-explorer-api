@@ -7,6 +7,7 @@ const cors = require('cors');
 const { errors } = require('celebrate');
 require('dotenv').config();
 const mongoose = require('mongoose');
+const { errorHandler } = require('./middlewares/errorHandler');
 const { PORT, NODE_ENV, MONGO_ADRESS } = require('./utils/constants');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const NotFoundError = require('./errors/NotFoundError');
@@ -17,10 +18,10 @@ const router = require('./routes/index');
 
 mongoose.connect(MONGO_ADRESS);
 
-app.use(limiter);
 app.use(bodyParser.json());
 app.use(helmet());
 app.use(requestLogger);
+app.use(limiter);
 app.use(cors());
 app.options('*', cors());
 app.use('/', router);
@@ -32,13 +33,15 @@ app.get('*', () => {
   throw new NotFoundError('OOPS! page not found');
 });
 
-app.use((err, req, res, next) => {
-  res.status(err.statusCode).send({
-    message:
-      err.statusCode === 500 ? 'An error occurred on the server' : err.message,
-  });
-  next();
-});
+// app.use((err, req, res, next) => {
+//   res.status(err.statusCode).send({
+//     message:
+//       err.statusCode === 500 ? 'An error occurred on the server' : err.message,
+//   });
+//   next();
+// });
+
+app.use(errorHandler);
 
 if (NODE_ENV !== 'production') {
   app.listen(PORT, () => {
