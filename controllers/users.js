@@ -9,7 +9,9 @@ const {
   USER_NOT_FOUND_MESSAGE,
   USER_EXISTS_ERROR_MESSAGE,
   INCOREC_CREDENTIALS_MESSAGE,
-
+  NODE_ENV,
+  JWT_SECRET,
+  SECRET_KEY_DEV_MODE,
 } = require('../utils/constants');
 
 const getUserById = (req, res, next) => {
@@ -50,8 +52,7 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password, { new: true, runValidators: true })
     .then((user) => {
-      const { NODE_ENV, JWT_SECRET } = process.env;
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : SECRET_KEY_DEV_MODE, { expiresIn: '7d' });
       res.status(200).send({ token, user });
     })
     .catch((err) => {
