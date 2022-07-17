@@ -6,7 +6,7 @@ const {
 
 const FORBIDDEN_MESSAGE = 'Access to the requested resource is forbidden';
 
-const USER_NOT_FOUND_MESSAGE = 'User not found';
+const USER_NOT_FOUND_MESSAGE = 'No user with matching id found';
 
 const INCOREC_CREDENTIALS_MESSAGE = 'Incorrect email or password';
 
@@ -18,7 +18,9 @@ const AUTH_ERROR_MESSAGE = 'Authorization required';
 
 const SERVER_ERROR_MESSAGE = 'An error ocurred on the server';
 
-const NO_ARTICLES_ERROR = 'No articles to display';
+const NO_ARTICLES_ERROR_MESSAGE = 'No articles to display';
+
+const USER_EXISTS_ERROR_MESSAGE = 'User already exists';
 
 const MONGO_ADRESS = 'mongodb://localhost:27017/newsexplorerdb';
 
@@ -33,5 +35,6 @@ module.exports = {
   ARTICLE_NOT_FOUND_MESSAGE,
   AUTH_ERROR_MESSAGE,
   SERVER_ERROR_MESSAGE,
-  NO_ARTICLES_ERROR,
+  NO_ARTICLES_ERROR_MESSAGE,
+  USER_EXISTS_ERROR_MESSAGE,
 };

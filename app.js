@@ -33,14 +33,6 @@ app.get('*', () => {
   throw new NotFoundError('OOPS! page not found');
 });
 
-// app.use((err, req, res, next) => {
-//   res.status(err.statusCode).send({
-//     message:
-//       err.statusCode === 500 ? 'An error occurred on the server' : err.message,
-//   });
-//   next();
-// });
-
 app.use(errorHandler);
 
 if (NODE_ENV !== 'production') {
