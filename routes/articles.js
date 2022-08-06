@@ -33,7 +33,7 @@ router.delete(
 	celebrate({
 		params: Joi.object()
 			.keys({
-				articlesId: Joi.string().hex().length(24),
+				articlesId: Joi.string().hex().required(),
 			})
 			.unknown(true),
 	}),
